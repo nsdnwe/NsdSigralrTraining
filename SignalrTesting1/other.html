@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>SignalR Simple Chat</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalR-2.1.2.js"></script>
+    <script src="http://localhost:54245/signalr/hubs"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        $(function () {
+            var hub = $.connection.chatHub;
+            $.connection.hub.url = 'http://localhost:54245/signalr';
+
+            console.log('s');
+            $.connection.hub.start({jsonp:true}).done(function () {
+                console.log('h');
+                hub.server.hello();
+            }).fail(function (reason) {
+                console.error(reason);
+            });
+
+            hub.client.hello = function (message) {
+                alert('Hello ' + message);
+            };
+        });
+    </script>
+</body>
+</html>
