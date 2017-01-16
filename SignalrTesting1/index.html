@@ -25,9 +25,11 @@
     </div>
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.1.2.min.js"></script>
-    <script src="http://localhost:54245/signalr/hubs"></script>
+    <script src="http://nsdsignalrtraining.azurewebsites.net/signalr/hubs"></script>
+    <!--<script src="http://localhost:54245/signalr/hubs"></script>-->
 
     <script type="text/javascript">
+        var initialized = false;
 
         function init() {
             var chat = $.connection.chatHub;
@@ -36,20 +38,33 @@
             $('#message-area').show();
             $('#with-who').text('Chatting: ' + $('#from').val() + ' to ' + $('#to').val());
 
+            // Receive message from the hub
             chat.client.broadcastMessage = function (name, message) {
                 var encodedName = $('<div />').text(name).html();
                 var encodedMsg = $('<div />').text(message).html();
                 $('#discussion').append('<li><strong>' + encodedName + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
             };
+
             $('#message').focus();
+
+            // Init connection to the hub
             $.connection.hub.start().done(function () {
                 $('#sendmessage').click(function () {
                     $('#discussion').append('<li><strong>Me</strong>:&nbsp;&nbsp;' + $('#message').val() + '</li>');
                     chat.server.send($('#from').val(), $('#from').val(), $('#to').val(), $('#message').val());
                     $('#message').val('').focus();
                 });
+                initialized = true;
             });
         };
+
+        // In case session expired, reinit if needed
+        window.onfocus = function (event) {
+            if (initialized) {
+                $.connection.hub.start();
+                // Get latest data if needed
+            }
+        }
     </script>
 </body>
 </html>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using Microsoft.AspNet.SignalR;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace SignalrTesting1 {
     public class ChatHub : Hub {
@@ -22,6 +23,9 @@ namespace SignalrTesting1 {
         // Must have userId in querystring! 
         // See sample web page how to define in JS
         public override Task OnConnected() {
+            string userId = Context.QueryString["userId"];
+            connectionList.RemoveAll(z => z.UserId == userId);
+            Debug.WriteLine("New userId " + userId + " " + Context.ConnectionId);
             connectionList.Add(new UserConnection() {
                 UserId = Context.QueryString["userId"],
                 ConnectionId = Context.ConnectionId
